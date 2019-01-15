@@ -16,8 +16,8 @@
       <file leaf-file-name="screenshot_chess_website.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/screenshot_chess_website.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="103" column="38" selection-start-line="103" selection-start-column="38" selection-end-line="103" selection-end-column="38" />
+            <state relative-caret-position="179">
+              <caret line="178" column="4" selection-start-line="178" selection-start-column="4" selection-end-line="178" selection-end-column="4" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -54,8 +54,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="776" />
-    <option name="y" value="38" />
+    <option name="x" value="929" />
+    <option name="y" value="23" />
     <option name="width" value="894" />
     <option name="height" value="746" />
   </component>
@@ -135,7 +135,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="776" y="38" width="894" height="746" extended-state="0" />
+    <frame x="929" y="23" width="894" height="746" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.037558686" />
@@ -143,11 +143,11 @@
       <window_info anchor="right" id="R Packages" />
       <window_info anchor="right" id="R Graphics" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.26194146" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3713405" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Python Console" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" weight="0.32761577" />
+      <window_info anchor="bottom" id="Terminal" weight="0.3266564" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39977604" />
       <window_info id="Favorites" side_tool="true" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -180,8 +180,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/screenshot_chess_website.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="103" column="38" selection-start-line="103" selection-start-column="38" selection-end-line="103" selection-end-column="38" />
+        <state relative-caret-position="179">
+          <caret line="178" column="4" selection-start-line="178" selection-start-column="4" selection-end-line="178" selection-end-column="4" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
           </folding>

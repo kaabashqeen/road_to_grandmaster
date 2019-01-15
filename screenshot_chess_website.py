@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 import chess
+from stockfish import Stockfish
 
 
 class Chess(object):
@@ -37,9 +38,11 @@ options.add_argument("--test-type")
 
 options.executable_path='/usr/local/bin/chromedriver'
 driver = webdriver.Chrome(options=options)
+# driver2 = webdriver.Chrome(options=options)
+stockfish = Stockfish('/Users/kaabashqeen/Downloads/stockfish-10-mac/Mac/stockfish-10-64')
 
 ''' Play actual
-driver2 = webdriver.Chrome(options=options)
+
 
 # Login with real
 driver2.get('https://www.chess.com/')
@@ -79,6 +82,7 @@ chat.send_keys(Keys.ENTER)
 # bot
 driver.get('https://www.chess.com/play/computer')
 time.sleep(2)
+driver.find_element_by_xpath('//*[@id="newbie-modal"]/div/div/button').click()
 # change settings
 driver.find_element_by_xpath('//*[@id="chess-board-sidebar"]/div[5]/div[1]/button[1]').click()
 # choose level 10 bot
@@ -86,60 +90,109 @@ driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[1]/d
 # start play
 driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[2]/button').click()
 
+# get element.style height and width of board
+chessboard = driver.find_element_by_xpath('//*[@id="chessboard_boardarea"]')
+height, width = chessboard.size['height'], chessboard.size['width']
+chess_game = Chess(height, width)
+start = driver.find_elements_by_xpath('//*[@id="chessboard_boardarea"]')[0]
 
 # assume game is white for me
 
+# make initial move of pawn
+action = webdriver.ActionChains(driver)
+action.move_to_element_with_offset(start, chess_game.board['e2'][0], chess_game.board['e2'][1])
+action.click()
+action.move_to_element_with_offset(start, chess_game.board['e4'][0], chess_game.board['e4'][1])
+action.click()
+action.perform()
+
+time.sleep(5)
+
+prev_moveset = driver.find_elements_by_class_name("gotomove")
+
+# moves contains numbered list of moves 1-n
+moves = {}
+# movelist contains actions for python-chess to take to ascertain current board state
+movelist = []
+
+board = chess.Board()
+move_count = 1
+stockfish.depth = 20
+for move in prev_moveset:
+
+    board.push_san(move.text)
+    moves[move_count] = move.text
+    movelist.append(move.text)
+
+    move_count += 1
+
 game = True
-
-count = 0
 while game:
-    # moveset = driver.find_elements_by_id("movelist_")
     moveset = driver.find_elements_by_class_name("gotomove")
-    moves = {}
-    movelist = []
-    move_count = 1
-    for move in moveset:
-        if move.text!='':
-            moves[move_count] = move.text
-            move_count+=1
-            movelist.append(move.text)
-        # print(movelist)
-    # print(moveset1, count)
-    # moves = driver.find_element_by_xpath('//*[@id="moveListControl"]')
-    # moves_to_store = moves.text.split("\n")
-    # print(moves_to_store, count)
+    # print(len(moveset),len(prev_moveset))
+    if len(prev_moveset) != len(moveset):
+        diff = len(moveset)-len(prev_moveset)
+        print(diff)
+        print(len(moveset))
+        print(len(moveset[(-1*diff):]))
+        for move in moveset[(-1*diff):]:
+            if move.text!='':
+                print(move.text)
+                moves[move_count] = move.text
+                movelist.append(move.text)
+                # update state of board
+                board.push_san(move.text)
+                move_count += 1
+                print('done')
+
+
     print(moves)
-    print()
-
-    count+=1
-
-    board = chess.Board()
-
-    for move in movelist:
-        board.push_san(move)
-
     print(board)
-    # get element.style height and width of board
-    #
 
-    chessboard = driver.find_element_by_xpath('//*[@id="chessboard_boardarea"]')
-    height, width = chessboard.size['height'], chessboard.size['width']
-    chess_game = Chess(height, width)
+    stockfish.set_fen_position(board.fen())
+    # print(stockfish.depth)
+    print(stockfish.get_best_move())
+    best_move = stockfish.get_best_move()
 
-    start = driver.find_elements_by_xpath('//*[@id="chessboard_boardarea"]')[0]
+    move1 = best_move[:2]
+    move2 = best_move[2:]
 
     action = webdriver.ActionChains(driver)
-    action.move_to_element_with_offset(start, chess_game.board['e2'][0], chess_game.board['e2'][1])
+    action.move_to_element_with_offset(start, chess_game.board[move1][0], chess_game.board[move1][1])
     action.click()
-    action.move_to_element_with_offset(start, chess_game.board['e4'][0], chess_game.board['e4'][1])
+    promote = False
+    if len(move2) == 3:
+        move3 = move2[-1]
+        move2 = move2[:-1]
+        promote = True
+    action.move_to_element_with_offset(start, chess_game.board[move2][0], chess_game.board[move2][1])
     action.click()
+    if promote:
+        if move3 == 'q':
+            action.move_to_element_with_offset(start, chess_game.board[move2][0], chess_game.board[move2][1])
+        elif move3 == 'n':
+            action.move_to_element_with_offset(start, chess_game.board[move2][0], chess_game.board[move2][1]+height/16)
+        action.click()
     action.perform()
 
-    time.sleep(5)
-
-
-
-
+    curr_moves = driver.find_elements_by_class_name("gotomove")
+    
+    while curr_moves[-1].text=='':
+        print(len(driver.find_elements_by_class_name("gotomove")))
+        print("waiting")
+        time.sleep(1)
+        curr_moves = driver.find_elements_by_class_name("gotomove")
+    time.sleep(2)
+    prev_moveset = moveset
+    print()
+    print('next move')
+    # for move in curr_moves:
+    #     print(move.text)
+    # print()
+    #
+    # for move in prev_moveset:
+    #     print(move)
+    print()
 # driver.close()
 # driver2.close()
 
