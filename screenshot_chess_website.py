@@ -30,7 +30,15 @@ class Chess(object):
                 self.board[loc] = (x_start+x_distance*(j),y_start)
 
 
-
+# def endgame_check(moveset):
+#     for move in moveset:
+#         if move.text == "1-0":
+#             return('W')
+#         elif move.text == "0-1":
+#             return("B")
+#         elif move.text == "1/2-1/2":
+#             return('D')
+#     return False
 
 options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
@@ -86,7 +94,7 @@ driver.find_element_by_xpath('//*[@id="newbie-modal"]/div/div/button').click()
 # change settings
 driver.find_element_by_xpath('//*[@id="chess-board-sidebar"]/div[5]/div[1]/button[1]').click()
 # choose level 10 bot
-driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[1]/div[1]/ul/li[10]/a').click()
+# driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[1]/div[1]/ul/li[10]/a').click()
 # start play
 driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[2]/button').click()
 
@@ -97,14 +105,21 @@ chess_game = Chess(height, width)
 start = driver.find_elements_by_xpath('//*[@id="chessboard_boardarea"]')[0]
 
 # assume game is white for me
+# color = driver.find_element_by_xpath('//*[@id="live-app"]/div[1]/div[2]/div[3]')
+# color = color.get_attribute("class")
+# if color.find("white") == -1:
+#     color = "Black"
+# else:
+color = "White"
 
-# make initial move of pawn
-action = webdriver.ActionChains(driver)
-action.move_to_element_with_offset(start, chess_game.board['e2'][0], chess_game.board['e2'][1])
-action.click()
-action.move_to_element_with_offset(start, chess_game.board['e4'][0], chess_game.board['e4'][1])
-action.click()
-action.perform()
+if color == "White":
+    # make initial move of pawn
+    action = webdriver.ActionChains(driver)
+    action.move_to_element_with_offset(start, chess_game.board['e2'][0], chess_game.board['e2'][1])
+    action.click()
+    action.move_to_element_with_offset(start, chess_game.board['e4'][0], chess_game.board['e4'][1])
+    action.click()
+    action.perform()
 
 time.sleep(5)
 
@@ -129,6 +144,17 @@ for move in prev_moveset:
 game = True
 while game:
     moveset = driver.find_elements_by_class_name("gotomove")
+    move = moveset[-1]
+    if move.text == "1-0":
+        print ('W')
+        break
+    elif move.text == "0-1":
+        print ("B")
+        break
+    elif move.text == "1/2-1/2":
+        print ('D')
+        break
+
     # print(len(moveset),len(prev_moveset))
     if len(prev_moveset) != len(moveset):
         diff = len(moveset)-len(prev_moveset)
@@ -176,23 +202,27 @@ while game:
     action.perform()
 
     curr_moves = driver.find_elements_by_class_name("gotomove")
-    
-    while curr_moves[-1].text=='':
+    # sleep_count = 0
+    last_move = curr_moves[-1].text
+    while last_move=='':
         print(len(driver.find_elements_by_class_name("gotomove")))
         print("waiting")
         time.sleep(1)
         curr_moves = driver.find_elements_by_class_name("gotomove")
+        last_move = curr_moves[-1].text
+        # sleep_count+=1
+        # if sleep_count == 100:
+
+
     time.sleep(2)
     prev_moveset = moveset
     print()
     print('next move')
-    # for move in curr_moves:
-    #     print(move.text)
-    # print()
-    #
-    # for move in prev_moveset:
-    #     print(move)
     print()
+
+print('')
+driver.find_element_by_xpath('//*[@id="game-over"]/div[1]/div[2]/div[2]/button').click()
+driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[2]/button').click()
 # driver.close()
 # driver2.close()
 
