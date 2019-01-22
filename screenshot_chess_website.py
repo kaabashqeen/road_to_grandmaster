@@ -11,7 +11,7 @@ class Chess(object):
     def __init__(self):
         self.board = {}
         self.game_count=0
-        self.games = open('games.txt', 'a')
+
 
 
     def makeBoard(self, x_topleft, y_topleft, color):
@@ -38,8 +38,9 @@ class Chess(object):
                     self.board[loc] = (x_start+x_distance*(j),y_start)
 
 
-    def play(self):
+    def play(self, num_games):
         self.startUpGame()
+        games = open('games.txt', 'a')
         stockfish = Stockfish('/Users/kaabashqeen/Downloads/stockfish-10-mac/Mac/stockfish-10-64')
         chat = driver.find_element_by_class_name('chat-input-component').find_element_by_css_selector('input')
         play_game_button = driver.find_element_by_class_name('quick-challenge-play').click()
@@ -194,15 +195,6 @@ class Chess(object):
                     if sleep_count >= 30:
                         if self.endGameCheck():
                             game_is_playing = False
-                            try:
-                                ratings = driver.find_elements_by_class_name('user-tagline-rating')
-                                for i in range(len(ratings)):
-                                    if i ==0:
-                                        self.games.write('\n opponent:', ratings[i].text)
-                                    else:
-                                        self.games.write(' (now at', ratings[i].text, 'rating')
-                            except:
-                                break
                             break
 
             elif my_color == "Black":
@@ -226,42 +218,37 @@ class Chess(object):
                     if sleep_count >= 30:
                         if self.endGameCheck():
                             game_is_playing= False
-                            try:
-                                ratings = driver.find_elements_by_class_name('user-tagline-rating')
-                                for i in range(len(ratings)):
-                                    if i ==0:
-                                        self.games.write('\n opponent:', ratings[i].text)
-                                    else:
-                                        self.games.write(' (now at', ratings[i].text, 'rating')
-                            except:
-                                break
+
                             break
+
             time.sleep(2)
             prev_moveset = moveset
             print()
             print('next move')
             print()
+
             if self.endGameCheck():
                 game_is_playing = False
-                try:
-                    ratings = driver.find_elements_by_class_name('user-tagline-rating')
-                    for i in range(len(ratings)):
-                        if i == 0:
-                            self.games.write('\n opponent:', ratings[i].text)
-                        else:
-                            self.games.write(' (now at', ratings[i].text, 'rating')
-                except:
-                    break
                 break
-        print('end')
+
+        print('Game end')
         self.game_count+=1
-        if self.game_count==1:
-            self.games.close()
+
+        try:
+            ratings = driver.find_elements_by_class_name('user-tagline-rating')
+            for i in range(len(ratings)):
+                if i == 0:
+                    games.write('\n opponent:', ratings[i].text)
+                else:
+                    games.write(' (now at', ratings[i].text, 'rating)')
+        except:
             pass
 
+        games.close()
+        if self.game_count==num_games_to_play:
+            return 'DONE'
         else:
-            self.games.write('\n')
-            self.play()
+            self.play(num_games_to_play)
 
 
     def startUpGame(self):
@@ -295,20 +282,21 @@ driver = webdriver.Chrome(options=options)
 driver.get('https://www.chess.com/')
 driver.find_element_by_xpath('/html/body/div[1]/div/div[3]/div/div[1]/a').click()
 driver.find_element_by_xpath('//*[@id="sb"]/div[2]/a[7]').click()
-driver.find_element_by_xpath('//*[@id="username"]').send_keys('')
-driver.find_element_by_xpath('//*[@id="password"]').send_keys('')
+driver.find_element_by_xpath('//*[@id="username"]').send_keys('clouph')
+driver.find_element_by_xpath('//*[@id="password"]').send_keys('zxcvbnm123456')
 driver.find_element_by_xpath('//*[@id="_remember_me"]').click()
 driver.find_element_by_xpath('//*[@id="login"]').click()
 
 # Play
-
 chess_game = Chess()
-chess_game.play()
+num_games_to_play = eval(input('How many games would you like to play?'))
+while isinstance(num_games_to_play, int) == False:
+    print('integer values only')
+    num_games_to_play = eval(input('How many games would you like to play?'))
+chess_game.play(num_games_to_play)
 
-
-# driver.find_element_by_xpath('//*[@id="game-over"]/div[1]/div[2]/div[2]/button').click()
-# driver.find_element_by_xpath('//*[@id="new-game"]/div[2]/div[1]/article/div[2]/button').click()
-
-
-# driver.close()
-# driver2.close()
+close_game = input('Close game (y/n)?')
+while close_game != 'y':
+    time.sleep(1)
+    close_game = input('Close game (y/n)?')
+driver.close()

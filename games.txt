@@ -2,5 +2,7 @@ opponent 1:(2116) (now at 2144 rating)
 opponent 2:(2253) (now at 2173 rating)
 opponent 3:(2020) (now at 2185 rating)
 opponent 4: (2087) (now at 2199 rating)
-opponent 5: (2001) (now at 2208 rating)
+opponent 5: (2001) (now at 2208 rating) --- National Master!
 opponent 6: (2113) (now at 2221)
+opponent 7: (2041) (now at 2230)
+opponent 8: (2145) (now at 2243)
